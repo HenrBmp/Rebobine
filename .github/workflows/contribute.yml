@@ -1,7 +1,6 @@
 on:
   workflow_dispatch:
-  commit:
-  merge:
+  push:
     branches:
       - main
   
