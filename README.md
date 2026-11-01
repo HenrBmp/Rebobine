@@ -31,6 +31,13 @@
                     <sub><b>ViniciusKpz</b></sub>
                 </a>
             </td>
+            <td align="center">
+                <a href="https://github.com/GustavoZ09-ofc">
+                    <img src="https://avatars.githubusercontent.com/u/245414279?v=4" width="100;" alt="GustavoZ09-ofc"/>
+                    <br />
+                    <sub><b>GustavoZ09-ofc</b></sub>
+                </a>
+            </td>
 		</tr>
 	<tbody>
 </table>
