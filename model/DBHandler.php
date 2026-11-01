@@ -1,5 +1,6 @@
 <?php
-function loadEnv(string $path)
+
+function carregarEnv(string $path)
 {
     $env = parse_ini_file($path);
     foreach ($env as $key => $value) $_ENV[$key] = $value;
@@ -7,25 +8,30 @@ function loadEnv(string $path)
 
 class Database
 {
-    static PDO $conn;
+    private static Database $instancia;
+    public static PDO $conn;
 
-    public function __construct(string $usuario, string $senha, string $schema, string $host = 'localhost', int $porta = 3306)
+    private function __construct(string $usuario, string $senha, string $schema, string $host = 'localhost', int $porta = 3306)
     {
         try {
-            $this->conn = new PDO(
+            self::$conn = new PDO(
                 "mysql:host=$host;port=$porta;dbname=$schema;",
                 username: $usuario,
                 password: $senha
             );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $err) {
             die("Erro de conexão " . $err->getCode());
         }
     }
 
-    public static function fromEnv(): Database
+    public static function usandoEnv(): Database
     {
-        loadEnv(__DIR__ . "/.env");
+        if (isset(self::$instancia)) return self::$instancia;
+
+        carregarEnv("../.env");
+
+        if (!isset($_ENV["DB_USER"]) || !isset($_ENV["DB_PASSWD"]) || !isset($_ENV["DB_NAME"])) die("Variáveis de ambiente ausentes.");
 
         $usuario = $_ENV["DB_USER"];
         $senha   = $_ENV["DB_PASSWD"];
@@ -33,9 +39,25 @@ class Database
         $host    = $_ENV["DB_HOST"] ?? "localhost";
         $porta   = $_ENV["DB_PORT"] ?? 3306;
 
-        if (!isset($usuario) || !isset($senha) || !isset($schema)) die("Variáveis de ambiente ausentes.");
+        $instancia = new Database($usuario, $senha, $schema, $host, $porta);
 
-        return new Database($usuario, $senha, $schema, $host, $porta);
+        self::$instancia = $instancia;
+        return $instancia;
+    }
+
+    public static function usandoArgs(
+        string $usuario,
+        string $senha,
+        string $schema,
+        string $host = 'localhost',
+        int $porta = 3306
+    ): Database {
+        if (isset(self::$instancia)) return self::$instancia;
+
+        $instancia = new Database($usuario, $senha, $schema, $host, $porta);
+
+        self::$instancia = $instancia;
+        return $instancia;
     }
 
     /**
@@ -45,7 +67,7 @@ class Database
      */
     public function query(string $sql, array $params = []): PDOStatement
     {
-        $statement = $this->conn->prepare($sql);
+        $statement = self::$conn->prepare($sql);
         $statement->execute($params);
         return $statement;
     }
@@ -55,16 +77,16 @@ class Database
      * @param string $sql - Query SQL com placeholders para os parâmetros.
      * @param array<string,string|int> $params - Array associativo com os parâmetros, opcional.
      */
-    public function transactionQuery(string $sql, array $params = []): PDOStatement
+    public function queryComTransacao(string $sql, array $params = []): PDOStatement
     {
         try {
-            $this->conn->beginTransaction();
-            $stmt = $this->query($sql, $params);
-            $this->conn->commit();
+            self::$conn->beginTransaction();
+            $stmt = self::query($sql, $params);
+            self::$conn->commit();
 
             return $stmt;
         } catch (PDOException $err) {
-            $this->conn->rollBack();
+            self::$conn->rollBack();
             throw $err;
         }
     }
