@@ -1,10 +1,8 @@
 <?php
 
-function carregarEnv(string $path)
-{
-    $env = parse_ini_file($path);
-    foreach ($env as $key => $value) $_ENV[$key] = $value;
-}
+namespace model;
+
+use PDO, PDOException, PDOStatement;
 
 class Database
 {
@@ -29,7 +27,7 @@ class Database
     {
         if (isset(self::$instancia)) return self::$instancia;
 
-        carregarEnv("../.env");
+        self::carregarEnv("../.env");
 
         if (!isset($_ENV["DB_USER"]) || !isset($_ENV["DB_PASSWD"]) || !isset($_ENV["DB_NAME"])) die("Variáveis de ambiente ausentes.");
 
@@ -89,5 +87,11 @@ class Database
             self::$conn->rollBack();
             throw $err;
         }
+    }
+
+    private static function carregarEnv(string $path)
+    {
+        $env = parse_ini_file($path);
+        foreach ($env as $key => $value) $_ENV[$key] = $value;
     }
 }
