@@ -10,7 +10,8 @@ class Auth {
     public function verificarLogin(string $nomeOuEmail, string $senha) {
         $db = Database::usandoEnv();
 
-        $sql = "SELECT COUNT(*) AS 'qnt' FROM Usuario WHERE (Nome = :nomeOuEmail OR Email = :nomeOuEmail) AND Senha = :senha";
+        $sql = "SELECT COUNT(*) AS 'qnt' FROM Usuario
+        WHERE (Nome = :nomeOuEmail OR Email = :nomeOuEmail) AND Senha = :senha AND Ativo = TRUE";
         $stmt = $db->query($sql, [
             "nomeOuEmail" => $nomeOuEmail,
             "senha" => $senha
