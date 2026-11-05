@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="src/assets/logos/png/Logo - Original.png" alt="Logo da Rebobine" width="320">
+</p>
+
 # Rebobine: Seja sublime, rebobine!
 
 ## Sumário
