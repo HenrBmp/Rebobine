@@ -84,7 +84,7 @@ class Database
     {
         try {
             $this->conn->beginTransaction();
-            $stmt = self::query($sql, $params);
+            $stmt = $this->query($sql, $params);
             $this->conn->commit();
 
             return $stmt;
