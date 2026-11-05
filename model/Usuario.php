@@ -27,4 +27,17 @@ class Usuario {
         }
     }
 
+    public function inativar(int $id): bool {
+        $db = Database::usandoEnv();
+
+        $sql = "UPDATE Usuario SET Ativo = FALSE WHERE Id = :id";
+        try {
+            $stmt = $db->queryComTransacao($sql, [
+                "id" => $id
+            ]);
+            return $stmt->rowCount() === 1;
+        } catch (PDOException $err) {
+            return FALSE;
+        }
+    }
 }
