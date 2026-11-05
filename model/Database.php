@@ -25,11 +25,15 @@ class Database
 
     public static function usandoEnv(): Database
     {
-        if (isset(self::$instancia)) return self::$instancia;
+        if (isset(self::$instancia)) {
+            return self::$instancia;
+        }
 
         self::carregarEnv("../.env");
 
-        if (!isset($_ENV["DB_USER"]) || !isset($_ENV["DB_PASSWD"]) || !isset($_ENV["DB_NAME"])) die("Variáveis de ambiente ausentes.");
+        if (!isset($_ENV["DB_USER"]) || !isset($_ENV["DB_PASSWD"]) || !isset($_ENV["DB_NAME"])) {
+            die("Variáveis de ambiente ausentes.");
+        }
 
         $usuario = $_ENV["DB_USER"];
         $senha   = $_ENV["DB_PASSWD"];
@@ -67,6 +71,7 @@ class Database
     {
         $statement = self::$conn->prepare($sql);
         $statement->execute($params);
+        $statement->setFetchMode(PDO::FETCH_ASSOC);
         return $statement;
     }
 
