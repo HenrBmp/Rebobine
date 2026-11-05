@@ -9,19 +9,19 @@ include "../autoloader.php";
 class Auth {
     private ?int $idEncontrado;
 
-    public function verificarLogin(string $nomeOuEmail, string $senha) {
+    public function verificarLogin(string $email, string $senha) {
         $db = Database::usandoEnv();
 
-        $sql = "SELECT COUNT(*) AS 'qnt', Id FROM Usuario
-        WHERE (Nome = :nomeOuEmail OR Email = :nomeOuEmail) AND Senha = :senha AND Ativo = TRUE";
+        $sql = "SELECT COUNT(*) AS 'Qnt', Id FROM Usuario
+        WHERE Email = :email AND Senha = :senha AND Ativo = TRUE";
         $stmt = $db->query($sql, [
-            "nomeOuEmail" => $nomeOuEmail,
+            "email" => $email,
             "senha" => $senha
         ]);
 
         try {
             $resultado = $stmt->fetch()[0];
-            $usuariosEncontrados = $resultado["qnt"];
+            $usuariosEncontrados = $resultado["Qnt"];
             $this->idEncontrado = $resultado["Id"];
         } catch (PDOException $e) {
             return FALSE;
