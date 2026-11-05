@@ -7,17 +7,17 @@ use PDO, PDOException, PDOStatement;
 class Database
 {
     private static Database $instancia;
-    public static PDO $conn;
+    public PDO $conn;
 
     private function __construct(string $usuario, string $senha, string $schema, string $host = 'localhost', int $porta = 3306)
     {
         try {
-            self::$conn = new PDO(
+            $this->conn = new PDO(
                 "mysql:host=$host;port=$porta;dbname=$schema;",
                 username: $usuario,
                 password: $senha
             );
-            self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $err) {
             die("Erro de conexão " . $err->getCode());
         }
@@ -69,7 +69,7 @@ class Database
      */
     public function query(string $sql, array $params = []): PDOStatement
     {
-        $statement = self::$conn->prepare($sql);
+        $statement = $this->conn->prepare($sql);
         $statement->execute($params);
         $statement->setFetchMode(PDO::FETCH_ASSOC);
         return $statement;
@@ -83,13 +83,13 @@ class Database
     public function queryComTransacao(string $sql, array $params = []): PDOStatement
     {
         try {
-            self::$conn->beginTransaction();
+            $this->conn->beginTransaction();
             $stmt = self::query($sql, $params);
-            self::$conn->commit();
+            $this->conn->commit();
 
             return $stmt;
         } catch (PDOException $err) {
-            self::$conn->rollBack();
+            $this->conn->rollBack();
             throw $err;
         }
     }
