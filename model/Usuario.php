@@ -13,15 +13,16 @@ class Usuario {
         $db = Database::usandoEnv();
 
         $sql = "INSERT INTO Usuario(Nome, Senha, Email) VALUES (:nome, :senha, :email)";
-        $stmt = $db->queryComTransacao($sql, [
-            "nome" => $nome,
-            "senha" => $senha,
-            "email" => $email
-        ]);
 
         try {
+            $stmt = $db->queryComTransacao($sql, [
+                "nome" => $nome,
+                "senha" => $senha,
+                "email" => $email
+            ]);
+
             $this->sucesso = $stmt->rowCount() === 1;
-        } catch (PDOException) {
+        } catch (PDOException $e) {
             $this->sucesso = FALSE;
         }
     }
