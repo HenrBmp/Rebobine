@@ -2,10 +2,10 @@
 
 namespace model;
 
-use PDO, PDOException, Iterator;
+use PDO, PDOException;
 
 class Item {
-    private static const int ITEMS_POR_SELECT = 20;
+    private const int ITENS_POR_SELECT = 20;
 
     public bool $sucesso;
 
@@ -26,24 +26,48 @@ class Item {
         }
     }
 
-    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem): Iterator|false {
+    /**
+     * @return contract\ItemContract[]|false
+     */
+    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem): array|false {
         $db = Database::usandoEnv();
 
-        $sql = "SELECT I.Nome, I.Empresa, D.Descricao
-        FROM Itens AS I INNER JOIN Dominio AS D
-        ON I.IdTipo = D.Id WHERE Ativo = TRUE
-        ORDER BY :ordem
-        LIMIT :limite OFFSET :pagina";
-
+        $sql = "SELECT I.Nome, I.Empresa, I.Valor, D.Descricao
+            FROM Itens AS I INNER JOIN Dominio AS D
+            ON I.IdTipo = D.Id WHERE Ativo = TRUE
+            ORDER BY $ordem->value
+            LIMIT ". Item::ITENS_POR_SELECT ." OFFSET :pagina";
         try {
             $stmt = $db->query($sql, [
-                "ordem" => $ordem,
-                "limite" => Item::ITEMS_POR_SELECT,
                 "pagina" => $pagina
             ]);
-            return $stmt->getIterator();
+
+            if ($stmt->columnCount() === 0) return FALSE;
+
+            $result = $stmt->fetchAll(PDO::FETCH_CLASS, contract\ItemContract::class);
+            return $result;
         } catch (PDOException $err) {
             return false;
+        }
+    }
+
+    public static function comId(int $id): contract\ItemContract|false {
+        $db = Database::usandoEnv();
+
+        $sql = "SELECT I.Id, I.Nome, I.Empresa, I.Valor, D.Descricao
+        FROM Itens AS I INNER JOIN Dominio AS D
+        ON I.IdTipo = D.Id WHERE I.Ativo = TRUE AND I.Id = :id";
+        try {
+            $stmt = $db->query($sql, [
+                "id" => $id
+            ]);
+
+            if ($stmt->columnCount() === 0) return FALSE;
+
+            $result = $stmt->fetchObject(contract\ItemContract::class);
+            return $result;
+        } catch (PDOException $err) {
+            return FALSE;
         }
     }
 }
