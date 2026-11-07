@@ -29,7 +29,7 @@ class Database
             return self::$instancia;
         }
 
-        self::carregarEnv("../.env");
+        self::carregarArquivoEnv("../.env");
 
         if (!isset($_ENV["DB_USER"]) || !isset($_ENV["DB_PASSWD"]) || !isset($_ENV["DB_NAME"])) {
             die("Variáveis de ambiente ausentes.");
@@ -94,9 +94,11 @@ class Database
         }
     }
 
-    private static function carregarEnv(string $path)
+    private static function carregarArquivoEnv(string $path)
     {
-        $env = parse_ini_file($path);
-        foreach ($env as $key => $value) $_ENV[$key] = $value;
+        if (file_exists($path)) {
+            $env = parse_ini_file($path);
+            foreach ($env as $key => $value) $_ENV[$key] = $value;
+        }
     }
 }
