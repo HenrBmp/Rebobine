@@ -11,7 +11,7 @@ Clone este repositório:
 git clone https://github.com/HenrBmp/Rebobine.git
 ```
 
-Para maior conveniência, certifique-se de que nas configurações de seu MySql conste a seguinte declaração:
+Para maior conveniência, certifique-se de que nas configurações de seu MySql conste a seguinte declaração na seção "[mysqld]":
 ```
 lower_case_table_names=2
 ```
@@ -21,7 +21,8 @@ Utilize os seguintes comandos para gerar as tabelas do banco de dados:
 CREATE DATABASE IF NOT EXISTS Rebobine CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE Rebobine;
 
-CREATE TABLE IF NOT EXISTS Usuario (
+DROP TABLE Usuario;
+CREATE TABLE Usuario (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(255) NOT NULL,
     Senha VARCHAR(255) NOT NULL,
@@ -31,23 +32,28 @@ CREATE TABLE IF NOT EXISTS Usuario (
     UNIQUE (Email)
 );
 
-CREATE TABLE IF NOT EXISTS Dominio (
+DROP TABLE Dominio;
+CREATE TABLE Dominio (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     Descricao VARCHAR(255) NOT NULL,
     Tipo INT NOT NULL,
-    Ativo BOOLEAN NOT NULL DEFAULT TRUE
+    Ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    UNIQUE (Descricao)
 );
 
-CREATE TABLE IF NOT EXISTS Itens (
+DROP TABLE Itens;
+CREATE TABLE Itens (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(255) NOT NULL,
     Empresa VARCHAR(255) NOT NULL,
+    Valor DOUBLE NOT NULL,
     IdTipo INT NOT NULL,
     Ativo BOOLEAN NOT NULL DEFAULT TRUE,
     FOREIGN KEY (IdTipo) REFERENCES Dominio(Id)
 );
 
-CREATE TABLE IF NOT EXISTS Emprestimo (
+DROP TABLE Emprestimo;
+CREATE TABLE Emprestimo (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     IdUsuario INT NOT NULL,
     IdItem INT NOT NULL,
@@ -58,24 +64,19 @@ CREATE TABLE IF NOT EXISTS Emprestimo (
     FOREIGN KEY (IdItem) REFERENCES Itens(Id)
 );
 
-CREATE TABLE IF NOT EXISTS AtrasoEmprestimo (
+DROP TABLE PagamentoAtraso;
+CREATE TABLE PagamentoAtraso (
     Id INT AUTO_INCREMENT PRIMARY KEY,
+    IdTipoPagamento INT NOT NULL,
     IdEmprestimo INT NOT NULL,
     Valor DOUBLE NOT NULL,
     Ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    FOREIGN KEY (IdTipoPagamento) REFERENCES Dominio(Id),
     FOREIGN KEY (IdEmprestimo) REFERENCES Emprestimo(Id)
 );
 
-CREATE TABLE IF NOT EXISTS PagamentoAtraso (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    IdAtraso INT NOT NULL,
-    IdTipoPagamento INT NOT NULL,
-    Ativo BOOLEAN NOT NULL DEFAULT TRUE,
-    FOREIGN KEY (IdAtraso) REFERENCES AtrasoEmprestimo(Id),
-    FOREIGN KEY (IdTipoPagamento) REFERENCES Dominio(Id)
-);
-
-CREATE TABLE IF NOT EXISTS PagamentoEmprestimo (
+DROP TABLE PagamentoEmprestimo;
+CREATE TABLE PagamentoEmprestimo (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     IdEmprestimo INT NOT NULL,
     IdTipoPagamento INT NOT NULL,
@@ -85,7 +86,8 @@ CREATE TABLE IF NOT EXISTS PagamentoEmprestimo (
     FOREIGN KEY (IdTipoPagamento) REFERENCES Dominio(Id)
 );
 
-CREATE TABLE IF NOT EXISTS Devolucao (
+DROP TABLE Devolucao;
+CREATE TABLE Devolucao (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     IdEmprestimo INT NOT NULL,
     DataDevolucao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
