@@ -14,7 +14,7 @@ class Item {
 
         $sql = "INSERT INTO Item (Nome, Empresa, IdTipo) VALUE (:nome, :empresa, :tipo)";
         try {
-            $stmt = $db->query("sql", [
+            $stmt = $db->query($sql, [
                 "nome" => $nome,
                 "empresa" => $empresa,
                 "tipo" => $tipo
@@ -33,11 +33,13 @@ class Item {
         FROM Itens AS I INNER JOIN Dominio AS D
         ON I.IdTipo = D.Id WHERE Ativo = TRUE
         ORDER BY :ordem
-        LIMIT " . Item::ITEMS_POR_SELECT;
+        LIMIT :limite OFFSET :pagina";
 
         try {
             $stmt = $db->query($sql, [
-                "ordem" => $ordem
+                "ordem" => $ordem,
+                "limite" => Item::ITEMS_POR_SELECT,
+                "pagina" => $pagina
             ]);
             return $stmt->getIterator();
         } catch (PDOException $err) {
