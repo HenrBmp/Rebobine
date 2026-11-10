@@ -4,10 +4,10 @@ namespace model;
 
 use PDO, PDOException;
 
-class Item {
+class Item extends Tabela {
     private const int ITENS_POR_SELECT = 20;
 
-    public bool $sucesso;
+    public readonly bool $sucesso;
 
     public function __construct(string $nome, string $empresa, int $tipo) {
         $db = Database::usandoEnv();
@@ -29,14 +29,14 @@ class Item {
     /**
      * @return contract\ItemContract[]|false
      */
-    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem): array|false {
+    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::NOME): array|false {
         $db = Database::usandoEnv();
 
         $sql = "SELECT I.Nome, I.Empresa, I.Valor, D.Descricao
             FROM Itens AS I INNER JOIN Dominio AS D
             ON I.IdTipo = D.Id WHERE Ativo = TRUE
             ORDER BY $ordem->value
-            LIMIT ". Item::ITENS_POR_SELECT ." OFFSET :pagina";
+            LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
         try {
             $stmt = $db->query($sql, [
                 "pagina" => $pagina

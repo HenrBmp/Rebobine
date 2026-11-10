@@ -6,9 +6,9 @@ use PDOException, PDO;
 
 include "../autoloader.php";
 
-class Usuario {
-    private const int ITENS_POR_SELECT = 50;
-    public bool $sucesso;
+class Usuario extends Tabela {
+    public const int ITENS_POR_SELECT = 50;
+    public readonly bool $sucesso;
 
     public function __construct(string $nome, string $senha, string $email) {
         $db = Database::usandoEnv();
@@ -45,19 +45,19 @@ class Usuario {
     /**
      * @return contract\UsuarioContract[]|false
      */
-    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem): array|false {
+    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::NOME): array|false {
         $db = Database::usandoEnv();
 
         $sql ="SELECT Id, Nome, Email, DataInscricao
             FROM Usuario WHERE Ativo=TRUE
             ORDER BY $ordem->value
-            LIMIT ". Usuario::ITENS_POR_SELECT ." OFFSET :pagina";
+            LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
         try {
             $stmt = $db->query($sql, [
                 "pagina" => $pagina
             ]);
 
-            if ($stmt->rowCount() === 0) return FALSE;
+            if ($stmt->columnCount() === 0) return FALSE;
 
             $result = $stmt->fetchAll(PDO::FETCH_CLASS, contract\UsuarioContract::class);
             return $result;
