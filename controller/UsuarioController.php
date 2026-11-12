@@ -4,10 +4,10 @@ namespace controller;
 
 use model\Usuario;
 
-/*
-    - Centraliza as validacoes e as operacoes relacionadas aos usuarios.
-    - Esta classe nao executa SQL diretamente: toda persistencia e consulta
-    - continua sendo responsabilidade da Model Usuario.
+/**
+    * Centraliza as validacoes e as operacoes relacionadas aos usuarios.
+    * Esta classe nao executa SQL diretamente: toda persistencia e consulta
+    * continua sendo responsabilidade da Model Usuario.
  */
 
 class UsuarioController extends Controller
@@ -34,7 +34,7 @@ class UsuarioController extends Controller
         }
 
         // Valida o formato do endereco de e-mail.
-        if (strlen($email) > 254 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (\strlen($email) > 254 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return $this->resposta(false, 'Informe um e-mail valido.');
         }
 
@@ -43,7 +43,7 @@ class UsuarioController extends Controller
             return $this->resposta(false, 'A senha deve possuir pelo menos 8 caracteres.');
         }
 
-        if (strlen($senha) > 72) {
+        if (\strlen($senha) > 72) {
             return $this->resposta(false, 'A senha nao pode ultrapassar 72 bytes.');
         }
 
@@ -72,9 +72,9 @@ class UsuarioController extends Controller
         }
     }
 
-    /*
-    - Busca um usuario ativo pelo identificador.
-    - @return array{sucesso: bool, mensagem: string, dados?: array}
+    /**
+     * Busca um usuario ativo pelo identificador.
+     * @return array{sucesso: bool, mensagem: string, dados?: array}
      */
     public function buscarPorId(int $id): array
     {
@@ -100,10 +100,10 @@ class UsuarioController extends Controller
         }
     }
 
-    /*
-    - Lista usuarios ativos de uma pagina.
-    -
-    - @return array{sucesso: bool, mensagem: string, dados?: array}
+    /**
+     * Lista usuarios ativos de uma pagina.
+     *
+     * @return array{sucesso: bool, mensagem: string, dados?: array}
      */
     public function listarPorPagina(int $pagina = 1): array
     {
@@ -139,9 +139,9 @@ class UsuarioController extends Controller
         }
     }
 
-    /*
-    - Realiza a exclusao logica de um usuario.
-    - @return array{sucesso: bool, mensagem: string}
+    /**
+     * Realiza a exclusao logica de um usuario.
+     * @return array{sucesso: bool, mensagem: string}
      */
     public function inativar(int $id): array
     {
