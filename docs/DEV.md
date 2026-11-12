@@ -86,7 +86,22 @@ CREATE TABLE Devolucao (
 );
 ```
 
-*Ainda em escrita...*
+Nas configuração do apache (httpd.conf), defina o DocumentRoot como a pasta public:
+```apache
+DocumentRoot "/caminho/para/Rebobine/public"
+<Directory "/caminho/para/Rebobine/public">
+    # Suas configurações...
+</Directory>
+```
+
+Na raiz do projeto, defina as variaveis de ambiente de acordo com .env.example:
+```bash
+DB_HOST=       # Opcional, padrão 'localhost'
+DB_PORT=       # Opcional, padrão '3306'
+DB_USER=
+DB_PASSWD=
+DB_NAME=
+```
 
 ## Nomenclatura
 
