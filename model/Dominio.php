@@ -22,15 +22,15 @@ class Dominio extends Tabela {
     }
 
     /**
-     * @return contract\DominioContract[]|bool
+     * Retorna todos os dominios cadastrados ordenados alfabeticamente.
+     * @param Ordenacoes Indica se o retorno é crescente ou decrescente.
+     * @return contract\DominioContract[]|false
      */
-    public static function obterTodos(
-        Ordenacoes $ordem = Ordenacoes::NOME
-    ): array|false {
+    public static function obterTodos(Ordenacoes $ordem = Ordenacoes::DESC): array|false {
         $db = Database::usandoEnv();
 
         $sql = "SELECT Id, Descricao, Tipo FROM Dominio WHERE Ativo = TRUE
-            ORDER BY $ordem->value";
+            ORDER BY Descricao $ordem->value";
         try {
             $stmt = $db->query($sql);
 
@@ -43,6 +43,32 @@ class Dominio extends Tabela {
         }
     }
 
+    /**
+     * Retorna todos os dominios de certo tipo ordenados alfabeticamente.
+     * @param Ordenacoes Indica se o retorno é crescente ou decrescente.
+     * @return contract\DominioContract[]|false
+     */
+    public static function comTipo(int $tipo, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
+        $db = Database::usandoEnv();
+
+        $sql = "SELECT Id, Descricao, Tipo FROM Dominio WHERE Ativo = TRUE WHERE Tipo=:tipo
+            ORDER BY Descricao $ordem->value";
+        try {
+            $stmt = $db->query($sql, ["tipo" => $tipo]);
+
+            if ($stmt->columnCount() === 0) return FALSE;
+
+            $resultado = $stmt->fetchAll(PDO::FETCH_CLASS, contract\DominioContract::class);
+            return $resultado;
+        } catch (PDOException $err) {
+            return FALSE;
+        }
+    }
+
+    /**
+     * @param int $id Identificador do domínio.
+     * @return contract\DominioContract|false Resultado segue o contrato para Dominio. False se não encontrar nada ou obter erro.
+     */
     public static function comId(int $id): contract\DominioContract|false {
         $db = Database::usandoEnv();
 

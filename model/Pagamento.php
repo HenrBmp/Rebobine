@@ -5,6 +5,9 @@ namespace model;
 use PDOException, PDO;
 
 class Pagamento extends Tabela{
+    /**
+     * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
+     */
     public function __construct(int $idEmprestimo, int $idTipo, float $valor) {
         $db = Database::usandoEnv();
 
@@ -29,11 +32,15 @@ class Pagamento extends Tabela{
         }
     }
 
+    /**
+     * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
+     * @return contract\PagamentoContract[]|bool Resultado segue o contrato para Pagamento. False se não encontrar nada ou obter erro.
+     */
     public static function comId(int $id): contract\PagamentoContract|false {
         $db = Database::usandoEnv();
 
         session_start();
-        $idUsuario = $_SESSION["IdUsuario"];
+        $idUsuario = $_SESSION["IdUsuario"] ?? throw new AuthError();
 
         $sql = "SELECT P.Id, P.Valor AS ValorPago,
         E.DataEmprestimo, E.DataVencimento,
@@ -60,13 +67,16 @@ class Pagamento extends Tabela{
     }
 
     /**
-     * @return contract\PagamentoContract[]|bool
+     * @param int $pagina Define o OFFSET da query.
+     * @param Ordenacoes Indica se o retorno é crescente ou decrescente.
+     * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
+     * @return contract\PagamentoContract[]|bool Resultado segue o contrato para Pagamento. False se não encontrar nada ou obter erro.
      */
-    public function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::NOME): array|bool {
+    public function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::DESC): array|bool {
         $db = Database::usandoEnv();
 
         session_start();
-        $idUsuario = $_SESSION["IdUsuario"];
+        $idUsuario = $_SESSION["IdUsuario"] ?? throw new AuthError();
 
         $sql = "SELECT P.Id, P.Valor AS ValorPago,
         E.DataEmprestimo, E.DataVencimento,
@@ -79,7 +89,7 @@ class Pagamento extends Tabela{
         INNER JOIN Itens AS I ON E.IdItem = I.Id
         INNER JOIN Dominio AS D ON D.Id = P.IdTipoPagamento
         WHERE Ativo=TRUE AND U.Id = :idUser
-        ORDER BY $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
+        ORDER BY E.DataVencimento $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
         try {
             $stmt = $db->query($sql, [
                 "idUser" => $idUsuario,

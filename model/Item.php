@@ -10,7 +10,7 @@ class Item extends Tabela {
     public function __construct(string $nome, string $empresa, float $valor, int $tipo) {
         $db = Database::usandoEnv();
 
-        $sql = "INSERT INTO Item (Nome, Empresa, Valor, IdTipo) VALUE (:nome, :empresa,:valor, :tipo)";
+        $sql = "INSERT INTO Itens (Nome, Empresa, Valor, IdTipo) VALUE (:nome, :empresa,:valor, :tipo)";
         try {
             $stmt = $db->query($sql, [
                 "nome" => $nome,
@@ -26,15 +26,17 @@ class Item extends Tabela {
     }
 
     /**
-     * @return contract\ItemContract[]|false
+     * @param int $pagina Define o OFFSET da query.
+     * @param Ordenacoes Indica se o retorno é crescente ou decrescente
+     * @return contract\ItemContract[]|false Resultado segue o contrato para Item. False se não encontrar nada ou obter erro.
      */
-    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::NOME): array|false {
+    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
         $db = Database::usandoEnv();
 
         $sql = "SELECT I.Nome, I.Empresa, I.Valor, D.Descricao
             FROM Itens AS I INNER JOIN Dominio AS D
             ON I.IdTipo = D.Id WHERE Ativo = TRUE
-            ORDER BY $ordem->value
+            ORDER BY I.Nome $ordem->value
             LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
         try {
             $stmt = $db->query($sql, [

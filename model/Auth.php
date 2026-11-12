@@ -12,6 +12,10 @@ class Auth {
      */
     public ?int $idEncontrado;
 
+    /**
+     * Verifica se as credenciais estão corretas.
+     * @return bool True se existir usuario com essas credenciais.
+     */
     public function verificarLogin(string $email, string $hashSenha): bool {
         $db = Database::usandoEnv();
 
@@ -31,5 +35,19 @@ class Auth {
         }
 
         return $usuariosEncontrados === 1;
+    }
+
+    /**
+     * Busca pela propriedade '$idEncontrado' nesta instancia de Auth e, se possível, guarda em $_SESSION.
+     * @return bool Indica se '$idEncontrado' foi achado nesta instancia.
+     */
+    public function guardarIdNaSessao(): bool {
+        if ($this->idEncontrado) {
+            session_start();
+            $_SESSION["IdUsuario"] =  $this->idEncontrado;
+            return session_commit();
+        } else {
+            return FALSE;
+        }
     }
 }

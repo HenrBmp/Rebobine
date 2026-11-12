@@ -42,14 +42,17 @@ class Usuario extends Tabela {
     }
 
     /**
-     * @return contract\UsuarioContract[]|false
+     * Retorna todos os usuarios ordenados alfabeticamento pelo nome.
+     * @param int $pagina Define o OFFSET da query.
+     * @param Ordenacoes Indica se o retorno é crescente ou decrescente.
+     * @return contract\UsuarioContract[]|false Resultado segue o contrato para Usuario. False se não encontrar nada ou obter erro.
      */
-    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::NOME): array|false {
+    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
         $db = Database::usandoEnv();
 
         $sql ="SELECT Id, Nome, Email, DataInscricao
             FROM Usuario WHERE Ativo=TRUE
-            ORDER BY $ordem->value
+            ORDER BY Nome $ordem->value
             LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
         try {
             $stmt = $db->query($sql, [
@@ -65,6 +68,9 @@ class Usuario extends Tabela {
         }
     }
 
+    /**
+     * @return contract\UsuarioContract|false Resultado segue o contrato para Usuario. False se não encontrar nada ou obter erro.
+     */
     public static function comId(int $id): contract\UsuarioContract|false {
         $db = Database::usandoEnv();
 
