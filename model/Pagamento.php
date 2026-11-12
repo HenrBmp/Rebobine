@@ -4,9 +4,7 @@ namespace model;
 
 use PDOException, PDO;
 
-class PagamentoNormal extends Tabela{
-    private static $tableName;
-
+class Pagamento extends Tabela{
     public function __construct(int $idEmprestimo, int $idTipo, float $valor) {
         $db = Database::usandoEnv();
 
@@ -14,13 +12,14 @@ class PagamentoNormal extends Tabela{
         if (!$emprestimo) {
             $this->sucesso = FALSE; return;
         }
-        self::$tableName = $emprestimo->getAtrasado() ? "PagamentoAtraso" : "PagamentoEmprestimo";
+        $atrasado = $emprestimo->getAtrasado();
 
-        $sql = "INSERT INTO ". self::$tableName ."(IdEmprestimo, IdTipoPagamento, Valor) VALUES (:idEmp, :idTipo, :valor)";
+        $sql = "INSERT INTO Pagamento(IdEmprestimo, IdTipoPagamento, Atrasado, Valor) VALUES (:idEmp, :idTipo, :atrasado :valor)";
         try {
             $stmt = $db->queryComTransacao($sql, [
                 "idEmp" => $idEmprestimo,
                 "idTipo" => $idTipo,
+                "atrasado" => (int)$atrasado,
                 "valor" => $valor
             ]);
 
@@ -41,7 +40,7 @@ class PagamentoNormal extends Tabela{
         U.Nome AS NomeUsuario, U.Email AS EmailUsuario,
         I.Nome AS NomeItem, I.Valor AS ValorOriginal,
         D.Descricao AS DescricaoTipo
-        FROM ". self::$tableName ." AS P
+        FROM Pagamento AS P
         INNER JOIN Emprestimo AS E ON E.Id = P.IdEmprestimo
         INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
         INNER JOIN Itens AS I ON E.IdItem = I.Id
@@ -74,7 +73,7 @@ class PagamentoNormal extends Tabela{
         U.Nome AS NomeUsuario, U.Email AS EmailUsuario,
         I.Nome AS NomeItem, I.Valor AS ValorOriginal,
         D.Descricao AS DescricaoTipo
-        FROM ". self::$tableName ." AS P
+        FROM Pagamento AS P
         INNER JOIN Emprestimo AS E ON E.Id = P.IdEmprestimo
         INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
         INNER JOIN Itens AS I ON E.IdItem = I.Id

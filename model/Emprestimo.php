@@ -10,7 +10,6 @@ class Emprestimo extends Tabela {
 
         session_start();
         $idUsuario = $_SESSION["IdUsuario"];
-        session_abort();
 
         $sql = "INSERT INTO Emprestimo(IdUsuario, IdItem, DataVencimento) VALUE (:usuario, :item, :vencimento)";
         try {
