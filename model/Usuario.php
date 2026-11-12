@@ -8,9 +8,8 @@ include "../autoloader.php";
 
 class Usuario extends Tabela {
     public const int ITENS_POR_SELECT = 50;
-    public readonly bool $sucesso;
 
-    public function __construct(string $nome, string $senha, string $email) {
+    public function __construct(string $nome, string $senhaHash, string $email) {
         $db = Database::usandoEnv();
 
         $sql = "INSERT INTO Usuario(Nome, Senha, Email) VALUES (:nome, :senha, :email)";
@@ -18,7 +17,7 @@ class Usuario extends Tabela {
         try {
             $stmt = $db->queryComTransacao($sql, [
                 "nome" => $nome,
-                "senha" => $senha,
+                "senha" => $senhaHash,
                 "email" => $email
             ]);
 
@@ -61,6 +60,8 @@ class Usuario extends Tabela {
 
             $result = $stmt->fetchAll(PDO::FETCH_CLASS, contract\UsuarioContract::class);
             return $result;
+        } catch (PDOException $err) {
+            return FALSE;
         }
     }
 
