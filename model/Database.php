@@ -70,7 +70,11 @@ class Database
     public function query(string $sql, array $params = []): PDOStatement
     {
         $statement = $this->conn->prepare($sql);
-        $statement->execute($params);
+        foreach ($params as $nome => $valor) {
+            $tipo = \is_int($valor) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $statement->bindValue($nome, $valor, $tipo);
+        }
+        $statement->execute();
         $statement->setFetchMode(PDO::FETCH_ASSOC);
         return $statement;
     }
