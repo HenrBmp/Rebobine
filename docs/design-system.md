@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/assets/logos/svg/Logo - Original.svg" alt="Logo da Rebobine" width="320">
+  <img src="src/assets/logos/svg/Logo-Original.svg" alt="Logo da Rebobine" width="320">
 </p>
 
 ---
