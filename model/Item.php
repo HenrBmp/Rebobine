@@ -7,16 +7,15 @@ use PDO, PDOException;
 class Item extends Tabela {
     private const int ITENS_POR_SELECT = 20;
 
-    public readonly bool $sucesso;
-
-    public function __construct(string $nome, string $empresa, int $tipo) {
+    public function __construct(string $nome, string $empresa, float $valor, int $tipo) {
         $db = Database::usandoEnv();
 
-        $sql = "INSERT INTO Item (Nome, Empresa, IdTipo) VALUE (:nome, :empresa, :tipo)";
+        $sql = "INSERT INTO Item (Nome, Empresa, Valor, IdTipo) VALUE (:nome, :empresa,:valor, :tipo)";
         try {
             $stmt = $db->query($sql, [
                 "nome" => $nome,
                 "empresa" => $empresa,
+                "valor" => $valor,
                 "tipo" => $tipo
             ]);
 
