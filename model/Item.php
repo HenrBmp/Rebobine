@@ -5,8 +5,6 @@ namespace model;
 use PDO, PDOException;
 
 class Item extends Tabela {
-    private const int ITENS_POR_SELECT = 20;
-
     public function __construct(string $nome, string $empresa, float $valor, int $tipo) {
         $db = Database::usandoEnv();
 

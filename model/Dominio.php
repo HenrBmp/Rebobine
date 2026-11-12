@@ -83,6 +83,8 @@ class Dominio extends Tabela {
 
             $resultado = $stmt->fetchObject(contract\DominioContract::class);
             return $resultado;
+        } catch (PDOException $err) {
+            return FALSE;
         }
     }
 }

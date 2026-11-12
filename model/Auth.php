@@ -27,10 +27,14 @@ class Auth {
         try {
             $resultado = $stmt->fetch();
 
-            if (!password_verify($senha, $resultado["Senha"])) return FALSE;
+            if (!password_verify($senha, $resultado["Senha"])) {
+                $this->idEncontrado = null;
+                return FALSE;
+            }
 
             $this->idEncontrado = (int)$resultado["Id"];
         } catch (PDOException $e) {
+            $this->idEncontrado = null;
             return FALSE;
         }
         return TRUE;
