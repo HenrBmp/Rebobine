@@ -1,0 +1,99 @@
+<?php
+
+namespace model;
+
+use PDOException, PDO;
+
+class PagamentoNormal extends Tabela{
+    private static $tableName;
+
+    public function __construct(int $idEmprestimo, int $idTipo, float $valor) {
+        $db = Database::usandoEnv();
+
+        $emprestimo = Emprestimo::comId($idEmprestimo);
+        if (!$emprestimo) {
+            $this->sucesso = FALSE; return;
+        }
+        self::$tableName = $emprestimo->getAtrasado() ? "PagamentoAtraso" : "PagamentoEmprestimo";
+
+        $sql = "INSERT INTO ". self::$tableName ."(IdEmprestimo, IdTipoPagamento, Valor) VALUES (:idEmp, :idTipo, :valor)";
+        try {
+            $stmt = $db->queryComTransacao($sql, [
+                "idEmp" => $idEmprestimo,
+                "idTipo" => $idTipo,
+                "valor" => $valor
+            ]);
+
+            $this->sucesso = $stmt->rowCount() === 1;
+        } catch (PDOException $err) {
+            $this->sucesso = FALSE;
+        }
+    }
+
+    public static function comId(int $id): contract\PagamentoContract|false {
+        $db = Database::usandoEnv();
+
+        session_start();
+        $idUsuario = $_SESSION["IdUsuario"];
+
+        $sql = "SELECT P.Id, P.Valor AS ValorPago,
+        E.DataEmprestimo, E.DataVencimento,
+        U.Nome AS NomeUsuario, U.Email AS EmailUsuario,
+        I.Nome AS NomeItem, I.Valor AS ValorOriginal,
+        D.Descricao AS DescricaoTipo
+        FROM ". self::$tableName ." AS P
+        INNER JOIN Emprestimo AS E ON E.Id = P.IdEmprestimo
+        INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
+        INNER JOIN Itens AS I ON E.IdItem = I.Id
+        INNER JOIN Dominio AS D ON D.Id = P.IdTipoPagamento
+        WHERE Ativo=TRUE AND P.Id = :idPagamento AND U.Id = :idUser";
+
+        try {
+            $stmt = $db->query($sql, [ "idPagamento" => $id, "idUser" => $idUsuario ]);
+
+            if ($stmt->columnCount() === 0) return FALSE;
+
+            $resultado = $stmt->fetchObject(contract\PagamentoContract::class);
+            return $resultado;
+        } catch (PDOException $err) {
+            return FALSE;
+        }
+    }
+
+    /**
+     * @return contract\PagamentoContract[]|bool
+     */
+    public function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::NOME): array|bool {
+        $db = Database::usandoEnv();
+
+        session_start();
+        $idUsuario = $_SESSION["IdUsuario"];
+
+        $sql = "SELECT P.Id, P.Valor AS ValorPago,
+        E.DataEmprestimo, E.DataVencimento,
+        U.Nome AS NomeUsuario, U.Email AS EmailUsuario,
+        I.Nome AS NomeItem, I.Valor AS ValorOriginal,
+        D.Descricao AS DescricaoTipo
+        FROM ". self::$tableName ." AS P
+        INNER JOIN Emprestimo AS E ON E.Id = P.IdEmprestimo
+        INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
+        INNER JOIN Itens AS I ON E.IdItem = I.Id
+        INNER JOIN Dominio AS D ON D.Id = P.IdTipoPagamento
+        WHERE Ativo=TRUE AND U.Id = :idUser
+        ORDER BY $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
+        try {
+            $stmt = $db->query($sql, [
+                "idUser" => $idUsuario,
+                "pagina" => $pagina
+            ]);
+
+            if($stmt->columnCount() === 0) return FALSE;
+
+            $resultado = $stmt->fetchAll(PDO::FETCH_CLASS, contract\PagamentoContract::class);
+            return $resultado;
+        } catch (PDOException $err) {
+            return FALSE;
+        }
+    }
+
+}
