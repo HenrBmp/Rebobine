@@ -17,7 +17,7 @@ class Pagamento extends Tabela{
         }
         $atrasado = $emprestimo->getAtrasado();
 
-        $sql = "INSERT INTO Pagamento(IdEmprestimo, IdTipoPagamento, Atrasado, Valor) VALUES (:idEmp, :idTipo, :atrasado :valor)";
+        $sql = "INSERT INTO Pagamento(IdEmprestimo, IdTipoPagamento, Atrasado, Valor) VALUES (:idEmp, :idTipo, :atrasado, :valor)";
         try {
             $stmt = $db->queryComTransacao($sql, [
                 "idEmp" => $idEmprestimo,
@@ -52,7 +52,7 @@ class Pagamento extends Tabela{
         INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
         INNER JOIN Itens AS I ON E.IdItem = I.Id
         INNER JOIN Dominio AS D ON D.Id = P.IdTipoPagamento
-        WHERE Ativo=TRUE AND P.Id = :idPagamento AND U.Id = :idUser";
+        WHERE P.Ativo=TRUE AND P.Id = :idPagamento AND U.Id = :idUser";
 
         try {
             $stmt = $db->query($sql, [ "idPagamento" => $id, "idUser" => $idUsuario ]);
@@ -88,7 +88,7 @@ class Pagamento extends Tabela{
         INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
         INNER JOIN Itens AS I ON E.IdItem = I.Id
         INNER JOIN Dominio AS D ON D.Id = P.IdTipoPagamento
-        WHERE Ativo=TRUE AND U.Id = :idUser
+        WHERE P.Ativo=TRUE AND U.Id = :idUser
         ORDER BY E.DataVencimento $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
         try {
             $stmt = $db->query($sql, [

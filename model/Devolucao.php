@@ -38,7 +38,7 @@ class Devolucao extends Tabela {
         session_start();
         $idUsuario = $_SESSION["IdUsuario"] ?? throw new AuthError();
 
-        $sql = "SELECT D.Id, D.DataDevolucao
+        $sql = "SELECT D.Id, D.DataDevolucao,
         E.DataEmprestimo,
         U.Nome AS NomeUsuario, U.Email AS EmailUsuario,
         I.Nome AS NomeItem
@@ -73,7 +73,7 @@ class Devolucao extends Tabela {
         session_start();
         $idUsuario = $_SESSION["IdUsuario"] ?? throw new AuthError();
 
-        $sql = "SELECT D.Id, D.DataDevolucao
+        $sql = "SELECT D.Id, D.DataDevolucao,
         E.DataEmprestimo,
         U.Nome AS NomeUsuario, U.Email AS EmailUsuario,
         I.Nome AS NomeItem

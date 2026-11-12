@@ -16,25 +16,24 @@ class Auth {
      * Verifica se as credenciais estão corretas.
      * @return bool True se existir usuario com essas credenciais.
      */
-    public function verificarLogin(string $email, string $hashSenha): bool {
+    public function verificarLogin(string $email, string $senha): bool {
         $db = Database::usandoEnv();
 
-        $sql = "SELECT COUNT(*) AS 'Qnt', Id FROM Usuario
-        WHERE Email = :email AND Senha = :senha AND Ativo = TRUE";
+        $sql = "SELECT Id, Senha FROM Usuario WHERE Email = :email AND Ativo = TRUE";
         $stmt = $db->query($sql, [
             "email" => $email,
-            "senha" => $hashSenha
         ]);
 
         try {
             $resultado = $stmt->fetch();
-            $usuariosEncontrados = $resultado["Qnt"];
-            $this->idEncontrado = $resultado["Id"];
+
+            if (!password_verify($senha, $resultado["Senha"])) return FALSE;
+
+            $this->idEncontrado = (int)$resultado["Id"];
         } catch (PDOException $e) {
             return FALSE;
         }
-
-        return $usuariosEncontrados === 1;
+        return TRUE;
     }
 
     /**

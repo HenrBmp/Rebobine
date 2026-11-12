@@ -51,7 +51,7 @@ class Dominio extends Tabela {
     public static function comTipo(int $tipo, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
         $db = Database::usandoEnv();
 
-        $sql = "SELECT Id, Descricao, Tipo FROM Dominio WHERE Ativo = TRUE WHERE Tipo=:tipo
+        $sql = "SELECT Id, Descricao, Tipo FROM Dominio WHERE Ativo = TRUE AND Tipo=:tipo
             ORDER BY Descricao $ordem->value";
         try {
             $stmt = $db->query($sql, ["tipo" => $tipo]);

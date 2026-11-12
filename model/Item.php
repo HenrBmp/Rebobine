@@ -33,9 +33,9 @@ class Item extends Tabela {
     public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
         $db = Database::usandoEnv();
 
-        $sql = "SELECT I.Nome, I.Empresa, I.Valor, D.Descricao
+        $sql = "SELECT I.Id, I.Nome, I.Empresa, I.Valor, D.Descricao
             FROM Itens AS I INNER JOIN Dominio AS D
-            ON I.IdTipo = D.Id WHERE Ativo = TRUE
+            ON I.IdTipo = D.Id WHERE I.Ativo = TRUE
             ORDER BY I.Nome $ordem->value
             LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
         try {

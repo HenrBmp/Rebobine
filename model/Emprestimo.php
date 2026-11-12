@@ -20,7 +20,7 @@ class Emprestimo extends Tabela {
             $stmt = $db->queryComTransacao($sql, [
                 "usuario" => $idUsuario,
                 "item" => $idItem,
-                "vencimento" => $dataVencimento
+                "vencimento" => $dataVencimento->format("c")
             ]);
 
             $this->sucesso = $stmt->rowCount() === 1;
@@ -41,7 +41,7 @@ class Emprestimo extends Tabela {
 
         $sql = "SELECT E.Id, E.DataEmprestimo, E.DataVencimento,
         U.Nome AS NomeUsuario, U.Email AS EmailUsuario,
-        I.Nome AS NomeItem, I.Empresa AS EmpresaItem, I.Valor AS ValorItem,
+        I.Nome AS NomeItem, I.Empresa AS EmpresaItem, I.Valor AS ValorItem
         FROM Emprestimo AS E
         INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
         INNER JOIN Itens AS I ON E.IdItem = I.Id
@@ -76,16 +76,16 @@ class Emprestimo extends Tabela {
 
         $sql = "SELECT E.Id, E.DataEmprestimo, E.DataVencimento,
         U.Nome AS NomeUsuario, U.Email AS EmailUsuario,
-        I.Nome AS NomeItem, I.Empresa AS EmpresaItem, I.Valor AS ValorItem,
+        I.Nome AS NomeItem, I.Empresa AS EmpresaItem, I.Valor AS ValorItem
         FROM Emprestimo AS E
         INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
         INNER JOIN Itens AS I ON E.IdItem = I.Id
         WHERE E.Ativo = TRUE AND U.Id = :idUser
-        ORDER BY E.DataVencimento $ordem->value LIMIT ". self::ITENS_POR_SELECT ."OFFSET :pagina";
+        ORDER BY E.DataVencimento $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
         try {
             $stmt = $db->query($sql, [
-                "pagina" > $pagina,
-                "idUsuario" => $idUsuario,
+                "pagina" => $pagina,
+                "idUser" => $idUsuario,
             ]);
 
             if ($stmt->columnCount() === 0) return FALSE;
