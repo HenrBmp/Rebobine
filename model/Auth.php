@@ -23,7 +23,7 @@ class Auth {
         ]);
 
         try {
-            $resultado = $stmt->fetch()[0];
+            $resultado = $stmt->fetch();
             $usuariosEncontrados = $resultado["Qnt"];
             $this->idEncontrado = $resultado["Id"];
         } catch (PDOException $e) {
