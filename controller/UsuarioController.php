@@ -10,7 +10,7 @@ use model\Usuario;
     - continua sendo responsabilidade da Model Usuario.
  */
 
-class UsuarioController
+class UsuarioController extends Controller
 {
     /**
      * Cadastra um usuario depois de validar e preparar os dados.
@@ -158,22 +158,5 @@ class UsuarioController
         } catch (\Throwable $erro) {
             return $this->resposta(false, 'Ocorreu um erro ao inativar o usuario.');
         }
-    }
-
-    /* 
-    - Padroniza o formato das respostas da Controller.
-     */
-    private function resposta(bool $sucesso, string $mensagem, mixed $dados = null): array
-    {
-        $resposta = [
-            'sucesso' => $sucesso,
-            'mensagem' => $mensagem
-        ];
-
-        if ($dados !== null) {
-            $resposta['dados'] = $dados;
-        }
-
-        return $resposta;
     }
 }
