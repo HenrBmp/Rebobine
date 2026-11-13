@@ -115,7 +115,7 @@ class UsuarioController extends Controller
         $offset = ($pagina - 1) * Usuario::ITENS_POR_SELECT;
 
         try {
-            $usuarios = Usuario::obterTodosDaPagina($offset);
+            $usuarios = Usuario::obterTodosComPaginacao($offset);
 
             if ($usuarios === false) {
                 return $this->resposta(false, 'Nao foi possivel consultar os usuarios.');
