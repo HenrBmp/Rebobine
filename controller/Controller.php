@@ -23,4 +23,8 @@ class Controller {
 
         return $resposta;
     }
+
+    final protected function paginaParaOffset(int $pagina, string $ORM): int {
+        return ($pagina - 1) * $ORM::ITENS_POR_SELECT;
+    }
 }

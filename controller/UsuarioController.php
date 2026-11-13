@@ -112,7 +112,7 @@ class UsuarioController extends Controller
         }
 
         // A Model recebe o OFFSET do SQL, e nao o numero da pagina.
-        $offset = ($pagina - 1) * Usuario::ITENS_POR_SELECT;
+        $offset = $this->paginaParaOffset($pagina, Usuario::class);
 
         try {
             $usuarios = Usuario::obterTodosComPaginacao($offset);
