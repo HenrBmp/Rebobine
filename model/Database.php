@@ -1,25 +1,23 @@
 <?php
 
-function carregarEnv(string $path)
-{
-    $env = parse_ini_file($path);
-    foreach ($env as $key => $value) $_ENV[$key] = $value;
-}
+namespace model;
+
+use PDO, PDOException, PDOStatement;
 
 class Database
 {
     private static Database $instancia;
-    public static PDO $conn;
+    private PDO $conn;
 
     private function __construct(string $usuario, string $senha, string $schema, string $host = 'localhost', int $porta = 3306)
     {
         try {
-            self::$conn = new PDO(
+            $this->conn = new PDO(
                 "mysql:host=$host;port=$porta;dbname=$schema;",
                 username: $usuario,
                 password: $senha
             );
-            self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $err) {
             die("Erro de conexão " . $err->getCode());
         }
@@ -27,11 +25,15 @@ class Database
 
     public static function usandoEnv(): Database
     {
-        if (isset(self::$instancia)) return self::$instancia;
+        if (isset(self::$instancia)) {
+            return self::$instancia;
+        }
 
-        carregarEnv("../.env");
+        self::carregarArquivoEnv("../.env");
 
-        if (!isset($_ENV["DB_USER"]) || !isset($_ENV["DB_PASSWD"]) || !isset($_ENV["DB_NAME"])) die("Variáveis de ambiente ausentes.");
+        if (!isset($_ENV["DB_USER"]) || !isset($_ENV["DB_PASSWD"]) || !isset($_ENV["DB_NAME"])) {
+            die("Variáveis de ambiente ausentes.");
+        }
 
         $usuario = $_ENV["DB_USER"];
         $senha   = $_ENV["DB_PASSWD"];
@@ -67,8 +69,13 @@ class Database
      */
     public function query(string $sql, array $params = []): PDOStatement
     {
-        $statement = self::$conn->prepare($sql);
-        $statement->execute($params);
+        $statement = $this->conn->prepare($sql);
+        foreach ($params as $nome => $valor) {
+            $tipo = \is_int($valor) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $statement->bindValue($nome, $valor, $tipo);
+        }
+        $statement->execute();
+        $statement->setFetchMode(PDO::FETCH_ASSOC);
         return $statement;
     }
 
@@ -80,14 +87,22 @@ class Database
     public function queryComTransacao(string $sql, array $params = []): PDOStatement
     {
         try {
-            self::$conn->beginTransaction();
-            $stmt = self::query($sql, $params);
-            self::$conn->commit();
+            $this->conn->beginTransaction();
+            $stmt = $this->query($sql, $params);
+            $this->conn->commit();
 
             return $stmt;
         } catch (PDOException $err) {
-            self::$conn->rollBack();
+            $this->conn->rollBack();
             throw $err;
+        }
+    }
+
+    private static function carregarArquivoEnv(string $path)
+    {
+        if (file_exists($path)) {
+            $env = parse_ini_file($path);
+            foreach ($env as $key => $value) $_ENV[$key] = $value;
         }
     }
 }

@@ -64,22 +64,12 @@ CREATE TABLE Emprestimo (
     FOREIGN KEY (IdItem) REFERENCES Itens(Id)
 );
 
-DROP TABLE PagamentoAtraso;
-CREATE TABLE PagamentoAtraso (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    IdTipoPagamento INT NOT NULL,
-    IdEmprestimo INT NOT NULL,
-    Valor DOUBLE NOT NULL,
-    Ativo BOOLEAN NOT NULL DEFAULT TRUE,
-    FOREIGN KEY (IdTipoPagamento) REFERENCES Dominio(Id),
-    FOREIGN KEY (IdEmprestimo) REFERENCES Emprestimo(Id)
-);
-
-DROP TABLE PagamentoEmprestimo;
-CREATE TABLE PagamentoEmprestimo (
+DROP TABLE Pagamento;
+CREATE TABLE Pagamento (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     IdEmprestimo INT NOT NULL,
     IdTipoPagamento INT NOT NULL,
+    Atrasado BOOLEAN NOT NULL,
     Valor DOUBLE NOT NULL,
     Ativo BOOLEAN NOT NULL DEFAULT TRUE,
     FOREIGN KEY (IdEmprestimo) REFERENCES Emprestimo(Id),
