@@ -62,14 +62,14 @@ class Emprestimo extends Tabela {
     }
 
     /**
-     * Retorna todos os emprestimos do usuario ordenados pelo vencimento.
-     * @param int $pagina Define o OFFSET da query.
+     * Retorna os emprestimos do usuario ordenados pelo vencimento.
+     * @param int $offset Define o OFFSET da query.
      * @param Ordenacoes Indica se o retorno é crescente ou decrescente.
      * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
      * @return contract\EmprestimoContract[]|false Resultado segue o contrato para Emprestimo. False se não encontrar nada ou obter erro.
      */
-    public static function obterTodosDaPagina(
-        int $pagina,
+    public static function obterTodosComPaginacao(
+        int $offset,
         Ordenacoes $ordem = Ordenacoes::DESC
     ): array|false {
         $db = Database::usandoEnv();
@@ -84,10 +84,10 @@ class Emprestimo extends Tabela {
         INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
         INNER JOIN Itens AS I ON E.IdItem = I.Id
         WHERE E.Ativo = TRUE AND U.Id = :idUser
-        ORDER BY E.DataVencimento $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
+        ORDER BY E.DataVencimento $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :offset";
         try {
             $stmt = $db->query($sql, [
-                "pagina" => $pagina,
+                "offset" => $offset,
                 "idUser" => $idUsuario,
             ]);
 

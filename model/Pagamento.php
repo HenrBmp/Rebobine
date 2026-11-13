@@ -67,12 +67,12 @@ class Pagamento extends Tabela{
     }
 
     /**
-     * @param int $pagina Define o OFFSET da query.
+     * @param int $offset Define o OFFSET da query.
      * @param Ordenacoes Indica se o retorno é crescente ou decrescente.
      * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
      * @return contract\PagamentoContract[]|bool Resultado segue o contrato para Pagamento. False se não encontrar nada ou obter erro.
      */
-    public function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::DESC): array|bool {
+    public function obterTodosComPaginacao(int $offset, Ordenacoes $ordem = Ordenacoes::DESC): array|bool {
         $db = Database::usandoEnv();
 
         session_start();
@@ -89,11 +89,11 @@ class Pagamento extends Tabela{
         INNER JOIN Itens AS I ON E.IdItem = I.Id
         INNER JOIN Dominio AS D ON D.Id = P.IdTipoPagamento
         WHERE P.Ativo=TRUE AND U.Id = :idUser
-        ORDER BY E.DataVencimento $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
+        ORDER BY E.DataVencimento $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :offset";
         try {
             $stmt = $db->query($sql, [
                 "idUser" => $idUsuario,
-                "pagina" => $pagina
+                "offset" => $offset
             ]);
 
             if($stmt->columnCount() === 0) return FALSE;

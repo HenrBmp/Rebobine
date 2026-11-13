@@ -63,11 +63,11 @@ class Devolucao extends Tabela {
     }
 
     /**
-     * @param int $pagina Define o OFFSET da query.
+     * @param int $offset Define o OFFSET da query.
      * @return contract\DevolucaoContract[]|false Resultado segue o contrato para Devolucao. False se não encontrar nada ou obter erro.
      * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
      */
-    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
+    public static function obterTodosComPaginacao(int $offset, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
         $db = Database::usandoEnv();
 
         session_start();
@@ -82,11 +82,11 @@ class Devolucao extends Tabela {
         INNER JOIN Itens AS I ON E.IdItem = I.Id
         INNER JOIN Usuario AS U ON E.IdUsuario = U.Id
         WHERE D.Ativo = TRUE AND U.Id = :idUser
-        ORDER BY D.DataDevolucao $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
+        ORDER BY D.DataDevolucao $ordem->value LIMIT ". self::ITENS_POR_SELECT ." OFFSET :offset";
         try {
             $stmt = $db->query($sql, [
                 "idUser" => $idUsuario,
-                "pagina" => $pagina
+                "offset" => $offset
             ]);
 
             if ($stmt->columnCount() === 0) return FALSE;

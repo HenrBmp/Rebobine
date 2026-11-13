@@ -43,20 +43,20 @@ class Usuario extends Tabela {
 
     /**
      * Retorna todos os usuarios ordenados alfabeticamento pelo nome.
-     * @param int $pagina Define o OFFSET da query.
+     * @param int $offset Define o OFFSET da query.
      * @param Ordenacoes Indica se o retorno é crescente ou decrescente.
      * @return contract\UsuarioContract[]|false Resultado segue o contrato para Usuario. False se não encontrar nada ou obter erro.
      */
-    public static function obterTodosDaPagina(int $pagina, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
+    public static function obterTodosComPaginacao(int $offset, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
         $db = Database::usandoEnv();
 
         $sql ="SELECT Id, Nome, Email, DataInscricao
             FROM Usuario WHERE Ativo=TRUE
             ORDER BY Nome $ordem->value
-            LIMIT ". self::ITENS_POR_SELECT ." OFFSET :pagina";
+            LIMIT ". self::ITENS_POR_SELECT ." OFFSET :offset";
         try {
             $stmt = $db->query($sql, [
-                "pagina" => $pagina
+                "offset" => $offset
             ]);
 
             if ($stmt->columnCount() === 0) return FALSE;
