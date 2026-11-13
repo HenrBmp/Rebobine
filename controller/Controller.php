@@ -4,9 +4,11 @@ namespace controller;
 
 
 /**
- * Define métodos comuns para todos os Controllers.
+ * Define métodos e propriedades comuns para todos os Controllers.
  */
 class Controller {
+    public const string FORMATO_DATA = "Y-m-d H:i:s";
+
     /*
      * Padroniza o formato das respostas da Controller.
      */
@@ -24,7 +26,10 @@ class Controller {
         return $resposta;
     }
 
-    final protected function paginaParaOffset(int $pagina, string $ORM): int {
-        return ($pagina - 1) * $ORM::ITENS_POR_SELECT;
+    /**
+     * Converte pagina para um offset de acordo com a constante ITENS_POR_SELECT da tabela fornecida.
+     */
+    final protected function paginaParaOffset(int $pagina, string $tabela): int {
+        return ($pagina - 1) * $tabela::ITENS_POR_SELECT;
     }
 }

@@ -9,7 +9,6 @@ use model\Usuario;
     * Esta classe nao executa SQL diretamente: toda persistencia e consulta
     * continua sendo responsabilidade da Model Usuario.
  */
-
 class UsuarioController extends Controller
 {
     /**
@@ -93,7 +92,7 @@ class UsuarioController extends Controller
                 'id' => $usuario->getId(),
                 'nome' => $usuario->getNome(),
                 'email' => $usuario->getEmail(),
-                'dataInscricao' => $usuario->getDataInscricao()->format('Y-m-d H:i:s')
+                'dataInscricao' => $usuario->getDataInscricao()->format(self::FORMATO_DATA)
             ]);
         } catch (\Throwable $erro) {
             return $this->resposta(false, 'Ocorreu um erro ao consultar o usuario.');

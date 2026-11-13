@@ -72,7 +72,7 @@ class Pagamento extends Tabela{
      * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
      * @return contract\PagamentoContract[]|bool Resultado segue o contrato para Pagamento. False se não encontrar nada ou obter erro.
      */
-    public function obterTodosComPaginacao(int $offset, Ordenacoes $ordem = Ordenacoes::DESC): array|bool {
+    public static function obterTodosComPaginacao(int $offset, Ordenacoes $ordem = Ordenacoes::DESC): array|bool {
         $db = Database::usandoEnv();
 
         session_start();
@@ -104,5 +104,4 @@ class Pagamento extends Tabela{
             return FALSE;
         }
     }
-
 }

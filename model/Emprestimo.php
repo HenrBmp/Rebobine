@@ -6,6 +6,12 @@ use PDOException, DateTime, PDO;
 
 class Emprestimo extends Tabela {
     /**
+     * Indica a taxa cobrada por semana em caso de atraso.
+     * Representação decimal da taxa percentual (número de 0 à 1).
+     */
+    public const float TAXA_DE_ATRASO_POR_SEMANA = 0.025;
+
+    /**
      * Tenta criar um Emprestimo em nome do usuario logado.
      * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
      */
@@ -103,7 +109,7 @@ class Emprestimo extends Tabela {
     /**
      * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
      */
-    public function inativar(int $id): bool {
+    public static function inativar(int $id): bool {
         $db = Database::usandoEnv();
 
         session_start();
@@ -117,6 +123,28 @@ class Emprestimo extends Tabela {
         } catch (PDOException $err) {
             return FALSE;
         }
+    }
+
+    /**
+     * Calcula o valor de pagamento do emprestimo com base nas semanas atrasadas, cada semana iniciada conta (Ex. 8 dias = 2 semanas).
+     * O juros é composto e baseado na constante Emprestimo::TAXA_DE_ATRASO_POR_SEMANA.
+     * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
+     */
+    public static function obterValorDePagamento(int $id): int|float|false {
+        $emprestimo = self::comId($id);
+
+        if ($emprestimo === FALSE) return FALSE;
+
+        $valorBase = $emprestimo->getValorItem();
+
+        if (!$emprestimo->getAtrasado()) return $valorBase;
+
+        $diferencaDeTempo = $emprestimo->getDataVencimento()->diff(new DateTime("now"), absolute: true);
+        $semanas = ceil($diferencaDeTempo->days / 7);
+        $valorComTaxa = $valorBase * pow((1 + self::TAXA_DE_ATRASO_POR_SEMANA), $semanas);
+        $valorArredondado = \round($valorComTaxa, 2);
+
+        return $valorArredondado;
     }
 
 }
