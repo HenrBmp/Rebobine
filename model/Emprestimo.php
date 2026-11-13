@@ -47,7 +47,10 @@ class Emprestimo extends Tabela {
         INNER JOIN Itens AS I ON E.IdItem = I.Id
         WHERE E.Ativo = TRUE AND E.Id = :idEmp AND U.Id = :idUser";
         try {
-            $stmt = $db->query($sql, [ "idEmp" => $idEmprestimo, "idUser" => $idUsuario ]);
+            $stmt = $db->query($sql, [
+                "idEmp" => $idEmprestimo,
+                "idUser" => $idUsuario
+            ]);
 
             if ($stmt->columnCount() === 0) return FALSE;
 
@@ -96,4 +99,24 @@ class Emprestimo extends Tabela {
             return FALSE;
         }
     }
+
+    /**
+     * @throws AuthError Caso a chave "IdUsuario" não seja encontrada em $_SESSION.
+     */
+    public function inativar(int $id): bool {
+        $db = Database::usandoEnv();
+
+        session_start();
+        $idUsuario = $_SESSION["IdUsuario"] ?? throw new AuthError();
+
+        $sql = "UPDATE Emprestimo SET Ativo = FALSE WHERE Id = :id AND IdUsuario = :usuario";
+        try {
+            $stmt = $db->queryComTransacao($sql, [ "id" => $id, "usuario" => $idUsuario]);
+
+            return $stmt->rowCount() === 1;
+        } catch (PDOException $err) {
+            return FALSE;
+        }
+    }
+
 }

@@ -7,7 +7,7 @@ use PDO, PDOException, PDOStatement;
 class Database
 {
     private static Database $instancia;
-    public PDO $conn;
+    private PDO $conn;
 
     private function __construct(string $usuario, string $senha, string $schema, string $host = 'localhost', int $porta = 3306)
     {
