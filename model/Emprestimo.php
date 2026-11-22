@@ -9,7 +9,7 @@ class Emprestimo extends Tabela {
      * Indica a taxa cobrada por semana em caso de atraso.
      * Representação decimal da taxa percentual (número de 0 à 1).
      */
-    public const float TAXA_DE_ATRASO_POR_SEMANA = 0.025;
+    public const TAXA_DE_ATRASO_POR_SEMANA = 0.025;
 
     /**
      * Tenta criar um Emprestimo em nome do usuario logado.

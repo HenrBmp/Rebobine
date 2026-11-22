@@ -18,8 +18,8 @@ lower_case_table_names=2
 
 Utilize os seguintes comandos para gerar as tabelas do banco de dados:
 ```sql
-CREATE DATABASE IF NOT EXISTS Rebobine CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE Rebobine;
+CREATE DATABASE IF NOT EXISTS Rebobine_v1 CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE Rebobine_v1;
 
 DROP TABLE Usuario;
 CREATE TABLE Usuario (
@@ -94,13 +94,13 @@ DocumentRoot "/caminho/para/Rebobine/public"
 </Directory>
 ```
 
-Na raiz do projeto, defina as variaveis de ambiente de acordo com .env.example:
+Copie `.env.example` para `.env` na raiz do projeto e preencha as credenciais. O parser remove comentários inline iniciados por `#` ou `;` após espaços somente em `DB_HOST` e `DB_PORT`; nesses valores, não use essa sequência como parte do valor.
 ```bash
-DB_HOST=       # Opcional, padrão 'localhost'
-DB_PORT=       # Opcional, padrão '3306'
+DB_HOST=localhost
+DB_PORT=3306
 DB_USER=
 DB_PASSWD=
-DB_NAME=
+DB_NAME=Rebobine_v1
 ```
 
 ## Nomenclatura

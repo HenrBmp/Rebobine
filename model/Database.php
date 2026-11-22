@@ -13,13 +13,14 @@ class Database
     {
         try {
             $this->conn = new PDO(
-                "mysql:host=$host;port=$porta;dbname=$schema;",
+                "mysql:host=$host;port=$porta;dbname=$schema;charset=utf8mb4;",
                 username: $usuario,
                 password: $senha
             );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $err) {
-            die("Erro de conexão " . $err->getCode());
+            error_log("[REBOBINE][Database] Falha na conexão PDO: " . $err->getMessage());
+            die("Não foi possível conectar ao banco de dados. Consulte o log do PHP/Apache.");
         }
     }
 
@@ -29,7 +30,7 @@ class Database
             return self::$instancia;
         }
 
-        self::carregarArquivoEnv("../.env");
+        self::carregarArquivoEnv(dirname(__DIR__) . DIRECTORY_SEPARATOR . ".env");
 
         if (!isset($_ENV["DB_USER"]) || !isset($_ENV["DB_PASSWD"]) || !isset($_ENV["DB_NAME"])) {
             die("Variáveis de ambiente ausentes.");
@@ -38,8 +39,18 @@ class Database
         $usuario = $_ENV["DB_USER"];
         $senha   = $_ENV["DB_PASSWD"];
         $schema  = $_ENV["DB_NAME"];
-        $host    = $_ENV["DB_HOST"] ?? "localhost";
-        $porta   = $_ENV["DB_PORT"] ?? 3306;
+        $host = trim((string)($_ENV["DB_HOST"] ?? "localhost"));
+        $host = trim((string)preg_replace('/\s+[;#].*$/', '', $host));
+        if ($host === "") {
+            $host = "localhost";
+        }
+
+        $portaConfigurada = trim((string)($_ENV["DB_PORT"] ?? ""));
+        $portaConfigurada = trim((string)preg_replace('/\s+[;#].*$/', '', $portaConfigurada));
+        $porta = $portaConfigurada === "" ? 3306 : filter_var($portaConfigurada, FILTER_VALIDATE_INT);
+        if ($porta === false || $porta < 1 || $porta > 65535) {
+            die("A variável DB_PORT deve conter uma porta numérica válida.");
+        }
 
         $instancia = new Database($usuario, $senha, $schema, $host, $porta);
 
@@ -100,9 +111,19 @@ class Database
 
     private static function carregarArquivoEnv(string $path)
     {
-        if (file_exists($path)) {
-            $env = parse_ini_file($path);
-            foreach ($env as $key => $value) $_ENV[$key] = $value;
+        if (!is_file($path) || !is_readable($path)) {
+            error_log("[REBOBINE][Database] Arquivo .env não encontrado ou sem permissão: " . $path);
+            return;
+        }
+
+        $env = parse_ini_file($path, false, INI_SCANNER_RAW);
+        if ($env === false) {
+            error_log("[REBOBINE][Database] Não foi possível interpretar o arquivo .env.");
+            return;
+        }
+
+        foreach ($env as $key => $value) {
+            $_ENV[$key] = $value;
         }
     }
 }

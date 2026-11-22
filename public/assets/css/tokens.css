@@ -1,0 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Saira:wght@400;500;600;700;800&family=VT323&display=swap');
+:root{
+ --noite:#12052B;--painel:#1D0B45;--painel2:#2B1459;--uv:#7A2BFF;--acido:#9EFF1F;--etiqueta:#F4EFE0;--preto:#000;
+ --lilas:#C9A7FF;--lilas-txt:#C3B5E3;--laranja:#FF7A1A;--ciano:#1FE3FF;--sol:#FFE600;--rec:#FF3B1F;
+ --bg:var(--noite);--fg:var(--etiqueta);--sf:var(--painel);--mute:var(--lilas-txt);--line:rgba(244,239,224,.14);
+ --disp:'Rubik Mono One','Arial Black',sans-serif;--body:'Saira','Segoe UI',system-ui,sans-serif;--osd:'VT323','Courier New',monospace;
+ --radius-sm:8px;--radius:12px;--radius-lg:18px;--shadow-hard:5px 5px 0 #000;--content:1240px;
+}

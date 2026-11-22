@@ -49,3 +49,14 @@
 
 ## Identidade visual e inspirações
 Temos uma [página dedicada](./docs/IDENTIDADE.md) à isto!
+
+
+## Documentação técnica
+
+- [Autenticação e painel administrativo](./docs/ADMIN-AUTH.md)
+
+- [Guia de desenvolvimento](./docs/DEV.md)
+- [Sistema de design](./docs/design-system.md)
+- [Integração das APIs](./docs/INTEGRACAO-APIS.md)
+- [Fluxo de cadastro do acervo pelo dashboard administrativo](./docs/FLUXO-CADASTRO-ACERVO.md)
+- [Estado do frontend](./docs/FRONTEND-STATUS.md)

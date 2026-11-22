@@ -7,7 +7,7 @@ namespace controller;
  * Define métodos e propriedades comuns para todos os Controllers.
  */
 class Controller {
-    public const string FORMATO_DATA = "Y-m-d H:i:s";
+    public const FORMATO_DATA = "Y-m-d H:i:s";
 
     /*
      * Padroniza o formato das respostas da Controller.

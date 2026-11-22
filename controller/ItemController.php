@@ -84,6 +84,7 @@ class ItemController extends Controller
 
             return $this->resposta(true, 'Item encontrado.', [
                 'id' => $item->getId(),
+                'idTipo' => $item->getIdTipo(),
                 'nome' => $item->getNome(),
                 'empresa' => $item->getEmpresa(),
                 'valor' => $item->getValor(),
@@ -119,6 +120,7 @@ class ItemController extends Controller
             foreach ($itens as $item) {
                 $dados[] = [
                     'id' => $item->getId(),
+                    'idTipo' => $item->getIdTipo(),
                     'nome' => $item->getNome(),
                     'empresa' => $item->getEmpresa(),
                     'valor' => $item->getValor(),

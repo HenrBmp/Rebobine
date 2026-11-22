@@ -31,7 +31,7 @@ class Item extends Tabela {
     public static function obterTodosComPaginacao(int $offset, Ordenacoes $ordem = Ordenacoes::DESC): array|false {
         $db = Database::usandoEnv();
 
-        $sql = "SELECT I.Id, I.Nome, I.Empresa, I.Valor, D.Descricao
+        $sql = "SELECT I.Id, I.IdTipo, I.Nome, I.Empresa, I.Valor, D.Descricao
             FROM Itens AS I INNER JOIN Dominio AS D
             ON I.IdTipo = D.Id WHERE I.Ativo = TRUE
             ORDER BY I.Nome $ordem->value
@@ -46,6 +46,7 @@ class Item extends Tabela {
             $result = $stmt->fetchAll(PDO::FETCH_CLASS, contract\ItemContract::class);
             return $result;
         } catch (PDOException $err) {
+            error_log("[REBOBINE][Item::obterTodosComPaginacao] " . $err->getMessage());
             return false;
         }
     }
@@ -53,7 +54,7 @@ class Item extends Tabela {
     public static function comId(int $id): contract\ItemContract|false {
         $db = Database::usandoEnv();
 
-        $sql = "SELECT I.Id, I.Nome, I.Empresa, I.Valor, D.Descricao
+        $sql = "SELECT I.Id, I.IdTipo, I.Nome, I.Empresa, I.Valor, D.Descricao
         FROM Itens AS I INNER JOIN Dominio AS D
         ON I.IdTipo = D.Id WHERE I.Ativo = TRUE AND I.Id = :id";
         try {
@@ -66,6 +67,7 @@ class Item extends Tabela {
             $result = $stmt->fetchObject(contract\ItemContract::class);
             return $result;
         } catch (PDOException $err) {
+            error_log("[REBOBINE][Item::comId] " . $err->getMessage());
             return FALSE;
         }
     }

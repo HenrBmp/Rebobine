@@ -7,16 +7,22 @@ use PDOException, PDO;
 include "../autoloader.php";
 
 class Usuario extends Tabela {
-    public const int ITENS_POR_SELECT = 50;
+    public const ITENS_POR_SELECT = 50;
 
     public function __construct(string $nome, string $senhaHash, string $email) {
         $db = Database::usandoEnv();
 
-        $sql = "INSERT INTO Usuario(Nome, Senha, Email) VALUES (:nome, :senha, :email)";
+        // Gera um login interno estável para cadastros de clientes já existentes.
+        // A área administrativa utiliza logins escolhidos explicitamente.
+        $baseLogin = strtolower((string)preg_replace('/[^a-zA-Z0-9._-]/', '', strstr($email, '@', true) ?: 'cliente'));
+        $login = substr($baseLogin !== '' ? $baseLogin : 'cliente', 0, 48) . '_' . substr(hash('sha256', strtolower($email)), 0, 8);
+
+        $sql = "INSERT INTO Usuario(Nome, Login, Senha, Email, IdTipo) VALUES (:nome, :login, :senha, :email, 6)";
 
         try {
             $stmt = $db->queryComTransacao($sql, [
                 "nome" => $nome,
+                "login" => $login,
                 "senha" => $senhaHash,
                 "email" => $email
             ]);

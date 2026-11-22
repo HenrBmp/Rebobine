@@ -5,9 +5,11 @@ namespace model\contract;
 class ItemContract {
     private string $Nome, $Empresa, $Descricao;
     private float $Valor;
-    private int $Id;
+    private int $Id, $IdTipo;
 
-    public function getId(): int {  return $this->Id; }
+    public function getId(): int { return $this->Id; }
+
+    public function getIdTipo(): int { return $this->IdTipo; }
 
     public function getNome(): string { return $this->Nome; }
 
