@@ -24,9 +24,10 @@ class PagamentoController extends Controller {
             return $this->resposta(false, "Identificador de domínio inválido.");
         }
 
-        $valorPositivo = $valor < 0;
-        $valorFinito = is_finite($valor);
-        if (!($valorPositivo && $valorFinito)) {
+        if (
+            $valor < 0 ||
+            !is_finite($valor)
+        ) {
             return $this->resposta(false, "Valor de pagamento inválido");
         }
         $valor = \round($valor, 2);
